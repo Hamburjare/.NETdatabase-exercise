@@ -17,10 +17,22 @@ static void StartMenu()
             AddProduct();
             Console.Clear();
             break;
+        case "2":
+            DeleteProduct();
+            Console.Clear();
+            break;
+        case "0":
+            Environment.Exit(0);
+            break;
+        default:
+            Console.WriteLine("Väärä valinta!");
+            Console.Clear();
+            StartMenu();
+            break;
     }
 }
 
-static bool AddProduct()
+static void AddProduct()
 {
     string newProductName;
     int newProductPrice;
@@ -39,7 +51,7 @@ static bool AddProduct()
     {
         Varasto storage = new()
         {
-            Tuotenimi = newProductName,
+            Tuotenimi = newProductName?.ToLower(),
             Tuotehinta = newProductPrice,
             Saldo = newProductAmount
         };
@@ -53,13 +65,46 @@ static bool AddProduct()
             Console.WriteLine("Tuotteen lisääminen ei onnistunut.");
             Console.ResetColor();
             StartMenu();
-            return false;
+            return;
         }
+
         Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine("Tuote lisätty onnistuneesti.");
         Console.ResetColor();
         StartMenu();
-        return (affected == 1);
+        return;
     }
 
+}
+
+static void DeleteProduct()
+{
+    string productName;
+
+    Console.Write("Anna tuotteen nimi: ");
+    productName = Console.ReadLine();
+
+    using (StorageControl varastonhallinta = new())
+    {
+        Varasto productDelete = varastonhallinta.Tuotteet?.Find(productName?.ToLower());
+        if (productDelete is null)
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"Tuotetta ({productName}) ei löytynyt!");
+            Console.ResetColor();
+            return;
+        }
+        else
+        {
+            varastonhallinta.Remove(productDelete);
+            int affected = varastonhallinta.SaveChanges();
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"Tuote ({productName}) poistettu onnistuneesti.");
+            Console.ResetColor();
+            StartMenu();
+            return;
+        }
+    }
 }
