@@ -25,6 +25,10 @@ static void StartMenu()
             PrintProduct();
             Console.Clear();
             break;
+        case "4":
+            ChangeProductName();
+            Console.Clear();
+            break;
         case "0":
             Environment.Exit(0);
             break;
@@ -122,10 +126,59 @@ static void PrintProduct()
         Console.WriteLine("Tuotteet:");
         foreach (var product in products)
         {
-            Console.WriteLine($"Tuotenimi: {product.Tuotenimi}, Hinta: {product.Tuotehinta}, Saldo: {product.Saldo}");
+            Console.WriteLine($"Tuotenimi: {product.Tuotenimi}, Hinta: {product.Tuotehinta},  Saldo: {product.Saldo}");
             Console.WriteLine();
         }
         StartMenu();
         return;
     }
 }
+
+static void ChangeProductName()
+{
+    string oldProductName;
+    string newProductName;
+
+    Console.Write("Anna vanha tuotteen nimi: ");
+    oldProductName = Console.ReadLine();
+
+    Console.Write("Anna uusi tuotteen nimi: ");
+    newProductName = Console.ReadLine();
+
+    using (StorageControl varastonhallinta = new())
+    {
+        Varasto productChange = varastonhallinta.Tuotteet?.Find(oldProductName?.ToLower());
+        if (productChange is null)
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"Tuotetta ({oldProductName}) ei löytynyt!");
+            Console.ResetColor();
+            return;
+        }
+        else
+        {
+            // Tää ei oo yhtää järkevä isolla mitta kaavalla poistaa row ja tehä uus jos haluu muuttaa yhtä valuee
+
+            // productChange.Tuotenimi = newProductName?.ToLower();
+
+            Varasto storage = new()
+            {
+                Tuotenimi = newProductName,
+                Tuotehinta = productChange.Tuotehinta,
+                Saldo = productChange.Saldo
+            };
+
+            varastonhallinta.Remove(productChange);
+            varastonhallinta.Tuotteet?.Add(storage);
+            int affected = varastonhallinta.SaveChanges();
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"Tuotteen ({oldProductName}) nimi vaihdettu onnistuneesti.");
+            Console.ResetColor();
+            StartMenu();
+            return;
+        }
+    }
+}
+
