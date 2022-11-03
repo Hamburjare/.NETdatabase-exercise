@@ -122,7 +122,7 @@ static void PrintProduct()
         Console.WriteLine("Tuotteet:");
         foreach (var product in products)
         {
-            Console.WriteLine($"Tuotenimi: {product.Tuotenimi}, Saldo: {product.Saldo}");
+            Console.WriteLine($"Tuotenimi: {product.Tuotenimi}, Hinta: {product.Tuotehinta}, Saldo: {product.Saldo}");
             Console.WriteLine();
         }
         StartMenu();
