@@ -21,6 +21,10 @@ static void StartMenu()
             DeleteProduct();
             Console.Clear();
             break;
+        case "3":
+            PrintProduct();
+            Console.Clear();
+            break;
         case "0":
             Environment.Exit(0);
             break;
@@ -106,5 +110,22 @@ static void DeleteProduct()
             StartMenu();
             return;
         }
+    }
+}
+
+static void PrintProduct()
+{
+    using (StorageControl varastonhallinta = new())
+    {
+        var products = varastonhallinta.Tuotteet?.ToList();
+        Console.Clear();
+        Console.WriteLine("Tuotteet:");
+        foreach (var product in products)
+        {
+            Console.WriteLine($"Tuotenimi: {product.Tuotenimi}, Saldo: {product.Saldo}");
+            Console.WriteLine();
+        }
+        StartMenu();
+        return;
     }
 }
